@@ -7,7 +7,6 @@ namespace Menu_Restaurante_API.Repositories.Interfaces
         Product GetById(int productId);
         List<Product> GetByRestaurant(int userId);                // menú completo
         List<Product> GetByCategory(int userId, int categoryId);  // filtrado por categoría
-        List<Product> GetFavorites(int userId);                   // marcados como favorito
         List<Product> GetWithDiscount(int userId);                // con descuento/happy hour
 
         int Create(Product newProduct);
