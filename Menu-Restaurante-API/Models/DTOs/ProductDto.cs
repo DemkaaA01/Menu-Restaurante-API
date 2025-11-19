@@ -9,6 +9,7 @@
         public int DiscountPercent { get; set; }
         public bool HappyHourEnabled { get; set; }
         public int CategoryId { get; set; }
+        public bool enabled { get; set; }   
         public string? CategoryName { get; set; }   // útil para mostrar menú
     }
 }

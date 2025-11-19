@@ -7,8 +7,10 @@ namespace Menu_Restaurante_API.Servicies.Interfaces
         CategoryDto GetById(int categoryId);
         List<CategoryDto> GetByUser(int userId);
 
-        CategoryDto CreateForUser(CreateCategoryDto dto, int userId);
+        CategoryDto CreateForUser(int userId, CreateCategoryDto dto);
         CategoryDto Update(int categoryId, UpdateCategoryDto dto);
         void Delete(int categoryId);
+
+        CategoryWithProductsDto GetWithProducts(int userId, int categoryId);
     }
 }

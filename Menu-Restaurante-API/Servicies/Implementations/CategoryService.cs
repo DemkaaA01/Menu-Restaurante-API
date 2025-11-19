@@ -1,95 +1,125 @@
-﻿//using Menu_Restaurante_API.Entities;
-//using Menu_Restaurante_API.Models.DTOs;
-//using Menu_Restaurante_API.Repositories.Interfaces;
-//using Menu_Restaurante_API.Servicies.Interfaces;
+﻿using Menu_Restaurante_API.Entities;
+using Menu_Restaurante_API.Models.DTOs;
+using Menu_Restaurante_API.Repositories.Interfaces;
+using Menu_Restaurante_API.Servicies.Interfaces;
 
-//namespace Menu_Restaurante_API.Servicies.Implementations
-//{
-//    public class CategoryService : ICategoryService
-//    {
-//        private readonly ICategoryRepository _categoryRepository;
+namespace Menu_Restaurante_API.Servicies.Implementations
+{
+    public class CategoryService : ICategoryService
+    {
+        private readonly ICategoryRepository _categoryRepository;
 
-//        public CategoryService(ICategoryRepository categoryRepository)
-//        {
-//            _categoryRepository = categoryRepository;
-//        }
-//        CategoryDto ICategoryService.CreateForUser(CreateCategoryDto dto, int userId)
-//        {
-//            if (dto == null) throw new ArgumentNullException(nameof(dto));
-//            if (string.IsNullOrWhiteSpace(dto.Name))
-//                throw new ArgumentException("El nombre de la categoría es obligatorio.");
+        public CategoryService(ICategoryRepository categoryRepository)
+        {
+            _categoryRepository = categoryRepository;
+        }
+        CategoryDto ICategoryService.CreateForUser(int userId, CreateCategoryDto dto)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                throw new ArgumentException("El nombre de la categoría es obligatorio.");
 
-//            var category = new Category
-//            {
-//                Name = dto.Name,
-//                Description = dto.Description ?? string.Empty,
-//                IsActive = true,
-//                UserId = userId
-//            };
+            var category = new Category
+            {
+                Name = dto.Name,
+                Description = dto.Description ?? string.Empty,
+                IsActive = true,
+                UserId = userId
+            };
 
-//            var createdId = _categoryRepository.Create(category);
-//            var created = _categoryRepository.GetById(createdId);
+            var createdId = _categoryRepository.Create(category);
+            var created = _categoryRepository.GetById(createdId);
 
-//            return MapToDto(created ?? category);
-//        }
+            return MapToDto(created ?? category);
+        }
 
-//        void ICategoryService.Delete(int categoryId)
-//        {
-//            var category = _categoryRepository.GetById(categoryId);
-//            if (category == null)
-//                throw new KeyNotFoundException("La categoría no existe.");
+        CategoryWithProductsDto ICategoryService.GetWithProducts(int userId, int categoryId)
+        {
+            // Traemos la categoría del repo (ideal: con Include de Products)
+            var category = _categoryRepository.GetById(categoryId);
 
-//            _categoryRepository.Remove(categoryId);
-//        }
+            if (category == null || category.UserId != userId)
+                throw new KeyNotFoundException("La categoría no existe para este restaurante.");
 
-//        CategoryDto ICategoryService.GetById(int categoryId)
-//        {
-//            var category = _categoryRepository.GetById(categoryId);
-//            if (category == null)
-//                throw new KeyNotFoundException("La categoría no existe.");
+            return new CategoryWithProductsDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                //UserId = category.UserId,
+                Products = category.Products
+                    .Select(p => new ProductDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Description = p.Description,
+                        Price = p.Price,
+                        DiscountPercent = p.DiscountPercent,
+                        HappyHourEnabled = p.HappyHourEnabled,
+                        CategoryId = p.CategoryId,
+                        //UserId = p.UserId
+                    })
+                    .ToList()
+            };
+        }
 
-//            return MapToDto(category);
-//        }
 
-//        List<CategoryDto> ICategoryService.GetByUser(int userId)
-//        {
-//            var categories = _categoryRepository.GetByUser(userId);
-//            return categories.Select(MapToDto).ToList();
-//        }
 
-//        CategoryDto ICategoryService.Update(int categoryId, UpdateCategoryDto dto)
-//        {
-//            var category = _categoryRepository.GetById(categoryId);
-//            if (category == null)
-//                throw new KeyNotFoundException("La categoría no existe.");
+        void ICategoryService.Delete(int categoryId)
+        {
+            var category = _categoryRepository.GetById(categoryId);
+            if (category == null)
+                throw new KeyNotFoundException("La categoría no existe.");
 
-//            // Actualizamos solo lo que venga distinto de null
-//            if (!string.IsNullOrWhiteSpace(dto.Name))
-//                category.Name = dto.Name;
+            _categoryRepository.Remove(categoryId);
+        }
 
-//            if (dto.Description != null)
-//                category.Description = dto.Description;
+        CategoryDto ICategoryService.GetById(int categoryId)
+        {
+            var category = _categoryRepository.GetById(categoryId);
+            if (category == null)
+                throw new KeyNotFoundException("La categoría no existe.");
 
-//            if (dto.IsActive.HasValue)
-//                category.IsActive = dto.IsActive.Value;
+            return MapToDto(category);
+        }
 
-//            _categoryRepository.Update(category, categoryId);
+        List<CategoryDto> ICategoryService.GetByUser(int userId)
+        {
+            var categories = _categoryRepository.GetByUser(userId);
+            return categories.Select(MapToDto).ToList();
+        }
 
-//            var updated = _categoryRepository.GetById(categoryId);
-//            return MapToDto(updated ?? category);
-//        }
-//        // =====================  PRIVADOS  =====================
+        CategoryDto ICategoryService.Update(int categoryId, UpdateCategoryDto dto)
+        {
+            var category = _categoryRepository.GetById(categoryId);
+            if (category == null)
+                throw new KeyNotFoundException("La categoría no existe.");
 
-//        private static CategoryDto MapToDto(Category category)
-//        {
-//            return new CategoryDto
-//            {
-//                Id = category.Id,
-//                Name = category.Name,
-//                Description = category.Description,
-//                IsActive = category.IsActive,
-//                UserId = category.UserId
-//            };
-//        }
-//    }
-//}
+            if (!string.IsNullOrWhiteSpace(dto.Name))
+                category.Name = dto.Name;
+
+            if (dto.Description != null)
+                category.Description = dto.Description;
+
+            if (dto.IsActive.HasValue)
+                category.IsActive = dto.IsActive.Value;
+
+            _categoryRepository.Update(category, categoryId);
+
+            var updated = _categoryRepository.GetById(categoryId);
+            return MapToDto(updated ?? category);
+        }
+        // =====================  PRIVADOS  =====================
+
+        private static CategoryDto MapToDto(Category category)
+        {
+            return new CategoryDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                IsActive = category.IsActive,
+                UserId = category.UserId
+            };
+        }
+    }
+}

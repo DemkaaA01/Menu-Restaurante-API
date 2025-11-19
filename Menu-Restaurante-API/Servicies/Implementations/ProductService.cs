@@ -96,6 +96,13 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             return MapToDto(withCategory ?? product);
         }
 
+        List<ProductDto> IProductService.GetByRestaurant(int userId, int? categoryId, bool discounted, bool onlyFavorites)
+        {
+            var products = _productRepository.GetByFilter(userId, categoryId, discounted);
+
+            return products.Select(p => MapToDto(p)).ToList();
+        }
+
         ProductDto IProductService.Update(int productId, UpdateProductDto dto)
         {
             var product = _productRepository.GetById(productId);
@@ -142,5 +149,6 @@ namespace Menu_Restaurante_API.Servicies.Implementations
                 yield return MapToDto(p);
         }
 
+        
     }
     }

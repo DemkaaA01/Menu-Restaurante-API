@@ -84,5 +84,27 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             product.HappyHourStart = updated.HappyHourStart;
             product.HappyHourEnd = updated.HappyHourEnd;
         }
+
+        List<Product> IProductRepository.GetByFilter(int userId, int? categoryId, bool discounted)
+        {
+            var query = _context.Products
+                .Include(p => p.Category)
+                .Where(p => p.UserId == userId);
+
+            // Filtro por categoría (si viene)
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            // Filtro por descuento / happy hour
+            if (discounted)
+            {
+                query = query.Where(p =>
+                    p.DiscountPercent > 0 || p.HappyHourEnabled);
+            }
+
+            return query.ToList();
+        }
     }
 }
