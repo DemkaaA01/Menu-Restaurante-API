@@ -9,10 +9,10 @@ namespace Menu_Restaurante_API.Servicies.Interfaces
 
         // Registro / login
         UserDto Register(RegisterUserDto dto);
-        UserDto Login(LoginDto dto);
 
         // Dueño de restaurante
         UserDto Update(int userId, UserDto dto);
         void Delete(int userId);
+        LoginResponseDto Login(LoginDto dto);
     }
 }

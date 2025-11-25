@@ -1,17 +1,25 @@
 ﻿using Menu_Restaurante_API.Entities;
+using Menu_Restaurante_API.Helpers;
 using Menu_Restaurante_API.Models.DTOs;
 using Menu_Restaurante_API.Repositories.Interfaces;
 using Menu_Restaurante_API.Servicies.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Menu_Restaurante_API.Servicies.Implementations
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _configuration = configuration;
         }
         void IUserService.Delete(int userId)
         {
@@ -46,16 +54,6 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             return MapToDto(user);
         }
 
-        UserDto IUserService.Login(LoginDto dto)
-        {
-            if (dto == null) throw new ArgumentNullException(nameof(dto));
-
-            var user = _userRepository.ValidateUser(dto.Email, dto.Password);
-            if (user == null)
-                throw new UnauthorizedAccessException("Usuario o contraseña incorrectos.");
-
-            return MapToDto(user);
-        }
 
         UserDto IUserService.Register(RegisterUserDto dto)
         {
@@ -71,7 +69,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             var user = new User
             {
                 Username = dto.Username,
-                Password = dto.Password,
+                Password = PasswordHelper.Hash(dto.Password),
                 Email = dto.Email,
                 RestaurantName = dto.RestaurantName,
                 Address = dto.Address,
@@ -113,6 +111,55 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             var updated = _userRepository.GetById(userId);
             return MapToDto(updated ?? user);
         }
+        public LoginResponseDto Login(LoginDto dto)
+        {
+            // 1) Validar credenciales en el repositorio
+            User user = _userRepository.ValidateUser(dto.Email, dto.Password);
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException("Email o contraseña incorrectos.");
+            }
+
+            // 2) Construir claims
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                // si más adelante querés roles, se agregan acá
+            };
+
+            // 3) Obtener configuración JWT
+            var jwtSection = _configuration.GetSection("Jwt");
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSection["Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            int expireMinutes = int.Parse(jwtSection["ExpireMinutes"]);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(expireMinutes),
+                Issuer = jwtSection["Issuer"],
+                Audience = jwtSection["Audience"],
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+            string tokenString = tokenHandler.WriteToken(securityToken);
+
+            // 4) Armar respuesta
+            return new LoginResponseDto
+            {
+                Token = tokenString,
+                UserId = user.Id,
+                Username = user.Username,
+                RestaurantName = user.RestaurantName
+            };
+        }
+
+        /// privado
+
         private static UserDto MapToDto(User user)
         {
             return new UserDto
@@ -125,5 +172,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
                 Phone = user.Phone,
             };
         }
+
+       
     }
 }

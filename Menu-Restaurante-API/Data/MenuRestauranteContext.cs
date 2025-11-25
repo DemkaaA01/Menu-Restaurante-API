@@ -21,7 +21,7 @@ namespace Menu_Restaurante_API.Data
                 new User
                 {
                     Id = 1,
-                    FirstName = "Restaurante San Martín",
+                    Username = "Restaurante San Martín",
                     Email = "sanmartin@gmail.com",
                     Password = "12345",
 
@@ -29,7 +29,7 @@ namespace Menu_Restaurante_API.Data
                 new User
                 {
                     Id = 2,
-                    FirstName = "Pizzería El Rincón",
+                    Username = "Pizzería El Rincón",
                     Email = "pizzeria@gmail.com",
                     Password = "abcd1234",
                 }

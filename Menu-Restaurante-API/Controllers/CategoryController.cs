@@ -1,5 +1,6 @@
 ﻿using Menu_Restaurante_API.Models.DTOs;
 using Menu_Restaurante_API.Servicies.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Menu_Restaurante_API.Controllers;
@@ -18,6 +19,7 @@ public class CategoryController : ControllerBase
     // Invitado / dueño: obtener una categoría por id
     // GET: api/category/3
     [HttpGet("{categoryId:int}")]
+    [AllowAnonymous]
     public ActionResult<CategoryDto> GetById(int categoryId)
     {
         var category = _categoryService.GetById(categoryId);
@@ -27,6 +29,7 @@ public class CategoryController : ControllerBase
     // Invitado / dueño: obtener categorías de un restaurante
     // GET: api/category/restaurant/1
     [HttpGet("restaurant/{userId:int}")]
+    [AllowAnonymous]
     public ActionResult<List<CategoryDto>> GetByUser(int userId)
     {
         var categories = _categoryService.GetByUser(userId);
@@ -36,6 +39,7 @@ public class CategoryController : ControllerBase
     // Invitado: obtener una categoría con sus productos
     // GET: api/category/restaurant/1/with-products/3
     [HttpGet("restaurant/{userId:int}/with-products/{categoryId:int}")]
+    [AllowAnonymous]
     public ActionResult<CategoryWithProductsDto> GetWithProducts(int userId, int categoryId)
     {
         var result = _categoryService.GetWithProducts(userId, categoryId); 
@@ -45,6 +49,7 @@ public class CategoryController : ControllerBase
     // Dueño: crear categoría para su restaurante
     // POST: api/category/restaurant/1
     [HttpPost("restaurant/{userId:int}")]
+    [Authorize]
     public ActionResult<CategoryDto> CreateForUser(int userId, [FromBody] CreateCategoryDto dto)
     {
         var created = _categoryService.CreateForUser(userId, dto);
@@ -54,6 +59,7 @@ public class CategoryController : ControllerBase
     // Dueño: actualizar categoría
     // PUT: api/category/3
     [HttpPut("{categoryId:int}")]
+    [Authorize]
     public ActionResult<CategoryDto> Update(int categoryId, [FromBody] UpdateCategoryDto dto)
     {
         var updated = _categoryService.Update(categoryId, dto);
@@ -63,6 +69,7 @@ public class CategoryController : ControllerBase
     // Dueño: borrar categoría
     // DELETE: api/category/3
     [HttpDelete("{categoryId:int}")]
+    [Authorize]
     public IActionResult Delete(int categoryId)
     {
         _categoryService.Delete(categoryId);

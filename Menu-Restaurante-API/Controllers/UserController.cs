@@ -1,6 +1,6 @@
 ﻿using Menu_Restaurante_API.Models.DTOs;
-using Menu_Restaurante_API.Services.Interfaces;
 using Menu_Restaurante_API.Servicies.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Menu_Restaurante_API.Controllers;
@@ -19,6 +19,7 @@ public class UserController : ControllerBase
     // Invitado: obtener lista de restaurantes
     // GET: api/user/restaurants
     [HttpGet("restaurants")]
+    [AllowAnonymous]
     public ActionResult<List<RestaurantListDto>> GetAllRestaurants()
     {
         var restaurants = _userService.GetAllRestaurants();
@@ -28,6 +29,7 @@ public class UserController : ControllerBase
     // Invitado: registrar nuevo restaurante (crear usuario dueño)
     // POST: api/user/register
     [HttpPost("register")]
+    [AllowAnonymous]
     public ActionResult<UserDto> Register([FromBody] RegisterUserDto dto)
     {
         var created = _userService.Register(dto);
@@ -37,15 +39,16 @@ public class UserController : ControllerBase
     // Invitado: login
     // POST: api/user/login
     [HttpPost("login")]
-    public ActionResult<UserDto> Login([FromBody] LoginDto dto)
+    [AllowAnonymous]
+    public ActionResult<LoginResponseDto> Login([FromBody] LoginDto dto)
     {
-        var user = _userService.Login(dto);
-        // más adelante acá podrías devolver también el JWT
-        return Ok(user);
+        var result = _userService.Login(dto);
+        return Ok(result);
     }
 
     // Dueño: ver su propia cuenta
     // GET: api/user/5
+    [Authorize]
     [HttpGet("{userId:int}")]
     public ActionResult<UserDto> GetById(int userId)
     {
@@ -55,6 +58,7 @@ public class UserController : ControllerBase
 
     // Dueño: editar su cuenta
     // PUT: api/user/5
+    [Authorize]
     [HttpPut("{userId:int}")]
     public ActionResult<UserDto> Update(int userId, [FromBody] UserDto dto)
     {
@@ -64,6 +68,7 @@ public class UserController : ControllerBase
 
     // Dueño: borrar su cuenta
     // DELETE: api/user/5
+    [Authorize]
     [HttpDelete("{userId:int}")]
     public IActionResult Delete(int userId)
     {

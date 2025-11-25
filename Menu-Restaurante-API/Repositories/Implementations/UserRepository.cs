@@ -1,5 +1,6 @@
 ﻿using Menu_Restaurante_API.Data;
 using Menu_Restaurante_API.Entities;
+using Menu_Restaurante_API.Helpers;
 using Menu_Restaurante_API.Repositories.Interfaces;
 
 namespace Menu_Restaurante_API.Repositories.Implementations
@@ -13,7 +14,7 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             _context = context;
         }
 
-        public User GetByID(int userId)
+        public User GetById(int userId)
         {
             return _context.Users.SingleOrDefault(x => x.Id == userId);
         }
@@ -23,7 +24,8 @@ namespace Menu_Restaurante_API.Repositories.Implementations
         }
         public User ValidateUser(string email, string password)
         {
-            return _context.Users.SingleOrDefault(x => x.Email == email && x.Password == password);              
+            var hashed = PasswordHelper.Hash(password);
+            return _context.Users.SingleOrDefault(x => x.Email == email && x.Password == hashed);              
         }
         public int Create(User newUser)
         {
@@ -37,14 +39,13 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             var user = _context.Users.SingleOrDefault( x => x.Id == userId); 
             if (user == null) return;
 
-            user.FirstName = updatedUser.FirstName;
-            user.LastName = updatedUser.LastName;
+            user.Username = updatedUser.Username;
             user.Email = updatedUser.Email;
             user.Password = updatedUser.Password;
 
             _context.SaveChanges();
         }
-        public void Delete(int userId) 
+        public void Remove(int userId) 
         {
             var user = _context.Users.FirstOrDefault(x => x.Id == userId);
             if (user == null) return;
