@@ -18,7 +18,7 @@ namespace Menu_Restaurante_API.Repositories.Implementations
         }
         public List<Category> GetByUser(int userId)
         {
-            return _context.Categories.Where(x => x.UserId == userId).ToList();
+            return _context.Categories.Where(x => x.UserId == userId).ToList(); //donde el userid puesto como parametro sea el mismo que tiene esa categoria.
         }
 
         public int Create(Category newCategory)

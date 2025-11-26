@@ -38,7 +38,7 @@ namespace Menu_Restaurante_API.Data
             // 🔹 Seed de categorías
             modelBuilder.Entity<Category>().HasData(
                 // Categorías del restaurante San Martín
-                new Category { Id = 1, Name = "Bebidas", IsActive = true, UserId = 1 },
+                new Category { Id = 1, Name = "Bebidas", IsActive = true, UserId = 1 }, //fijate que el UserId determina a quien pertenece.
                 new Category { Id = 2, Name = "Postres", IsActive = true, UserId = 1 },
                 new Category { Id = 3, Name = "Platos Principales", IsActive = true, UserId = 1 },
 
