@@ -130,10 +130,12 @@ namespace Menu_Restaurante_API.Servicies.Implementations
 
             // 3) Obtener configuración JWT
             var jwtSection = _configuration.GetSection("Jwt");
+
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSection["Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            int expireMinutes = int.Parse(jwtSection["ExpireMinutes"]);
+            string expireValue = jwtSection["ExpireMinutes"] ?? "60"; // default 60
+            int expireMinutes = int.Parse(expireValue);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -156,6 +158,24 @@ namespace Menu_Restaurante_API.Servicies.Implementations
                 Username = user.Username,
                 RestaurantName = user.RestaurantName
             };
+        }
+        public void TrackVisit(int userId)
+        {
+            _userRepository.IncrementVisits(userId);
+        }
+
+        public List<VisitReportDto> GetVisitsReport()
+        {
+            var users = _userRepository.GetAll();
+
+            return users
+                .Select(u => new VisitReportDto
+                {
+                    UserId = u.Id,
+                    RestaurantName = u.RestaurantName,
+                    Visits = u.Visits
+                })
+                .ToList();
         }
 
         /// privado

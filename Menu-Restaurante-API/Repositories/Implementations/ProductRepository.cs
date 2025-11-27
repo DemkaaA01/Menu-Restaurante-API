@@ -88,23 +88,34 @@ namespace Menu_Restaurante_API.Repositories.Implementations
         List<Product> IProductRepository.GetByFilter(int userId, int? categoryId, bool discounted)
         {
             var query = _context.Products
-                .Include(p => p.Category)
-                .Where(p => p.UserId == userId);
+                .Include(x => x.Category)
+                .Where(x => x.UserId == userId);
 
             // Filtro por categoría (si viene)
             if (categoryId.HasValue)
             {
-                query = query.Where(p => p.CategoryId == categoryId.Value);
+                query = query.Where(x => x.CategoryId == categoryId.Value);
             }
 
             // Filtro por descuento / happy hour
             if (discounted)
             {
-                query = query.Where(p =>
-                    p.DiscountPercent > 0 || p.HappyHourEnabled);
+                query = query.Where(x => x.DiscountPercent > 0 || x.HappyHourEnabled);
             }
 
             return query.ToList();
         }
+        public void IncreasePrices(int userId, int percent)
+        {
+            var products = _context.Products.Where(x => x.UserId == userId).ToList();
+
+            foreach (var p in products)
+            {
+                p.Price += p.Price * percent / 100;
+            }
+
+            _context.SaveChanges();
+        }
+
     }
 }

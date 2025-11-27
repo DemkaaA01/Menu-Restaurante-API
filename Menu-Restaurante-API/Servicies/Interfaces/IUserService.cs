@@ -14,5 +14,7 @@ namespace Menu_Restaurante_API.Servicies.Interfaces
         UserDto Update(int userId, UserDto dto);
         void Delete(int userId);
         LoginResponseDto Login(LoginDto dto);
+        void TrackVisit(int userId);
+        List<VisitReportDto> GetVisitsReport();
     }
 }
