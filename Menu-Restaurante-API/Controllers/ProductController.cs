@@ -1,4 +1,5 @@
 ﻿using Menu_Restaurante_API.Models.DTOs;
+using Menu_Restaurante_API.Servicies.Implementations;
 using Menu_Restaurante_API.Servicies.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace Menu_Restaurante_API.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
+    private readonly IUserService _userService;
 
-    public ProductController(IProductService productService)
+    public ProductController(IProductService productService, IUserService userService)
     {
         _productService = productService;
+        _userService = userService;
     }
 
     // Invitado: obtener detalle de un producto
@@ -35,6 +38,7 @@ public class ProductController : ControllerBase
         [FromQuery] int? categoryId = null,
         [FromQuery] bool discounted = false)
     {
+        _userService.TrackVisit(userId);
         var products = _productService.GetByRestaurant(userId, categoryId, discounted);
         return Ok(products);
     }
@@ -89,4 +93,12 @@ public class ProductController : ControllerBase
         var product = _productService.ToggleHappyHour(productId, enabled);
         return Ok(product);
     }
+
+    [HttpPut("restaurant/{userId:int}/increase-prices")]
+    public IActionResult IncreasePrices(int userId, [FromQuery] int percent)
+    {
+        _productService.IncreasePrices(userId, percent);
+        return NoContent();
+    }
+
 }

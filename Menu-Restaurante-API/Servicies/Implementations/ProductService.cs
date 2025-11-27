@@ -124,6 +124,12 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             var withCategory = _productRepository.GetById(product.Id);
             return MapToDto(withCategory ?? product);
         }
+        public void IncreasePrices(int userId, int percent)
+        {
+            if (percent < 0) throw new ArgumentException("El porcentaje no puede ser negativo.");
+            _productRepository.IncreasePrices(userId, percent);
+        }
+
 
         /// //////////////////////privado
         private ProductDto MapToDto(Product p)

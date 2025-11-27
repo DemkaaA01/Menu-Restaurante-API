@@ -10,5 +10,6 @@ namespace Menu_Restaurante_API.Repositories.Interfaces
         int Create(User newUser);
         void Update(User updatedUser, int userId);
         void Remove(int userId);
+        void IncrementVisits(int userId);
     }
 }

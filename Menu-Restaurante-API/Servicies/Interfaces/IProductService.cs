@@ -13,6 +13,6 @@ namespace Menu_Restaurante_API.Servicies.Interfaces
         ProductDto SetDiscount(int productId, int percent);        
         ProductDto ToggleHappyHour(int productId, bool enabled);
         List<ProductDto> GetByRestaurant(int userId, int? categoryId = null, bool discounted = false);
-
+        void IncreasePrices(int userId, int percent);
     }
 }

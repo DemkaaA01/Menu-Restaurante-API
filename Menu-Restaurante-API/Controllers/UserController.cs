@@ -75,4 +75,12 @@ public class UserController : ControllerBase
         _userService.Delete(userId);
         return NoContent();
     }
+
+    [HttpGet("visits-report")]
+    [Authorize] // si querés que solo el dueño pueda verlo, dejalo; si no, sacalo
+    public ActionResult<List<VisitReportDto>> GetVisitsReport()
+    {
+        var report = _userService.GetVisitsReport();
+        return Ok(report);
+    }
 }

@@ -54,5 +54,13 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             _context.SaveChanges();
         }
 
+        public void IncrementVisits(int userId)
+        {
+            var user = _context.Users.SingleOrDefault(u => u.Id == userId);
+            if (user == null) return;
+
+            user.Visits++;
+            _context.SaveChanges();
+        }
     }
 }

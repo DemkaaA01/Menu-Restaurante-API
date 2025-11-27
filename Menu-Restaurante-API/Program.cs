@@ -1,43 +1,77 @@
-using Microsoft.EntityFrameworkCore;
-using Menu_Restaurante_API.Data;
+﻿using Menu_Restaurante_API.Data;
+using Menu_Restaurante_API.Repositories.Implementations;
+using Menu_Restaurante_API.Repositories.Interfaces;
+using Menu_Restaurante_API.Servicies.Implementations;
+using Menu_Restaurante_API.Servicies.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-var jwtSection = builder.Configuration.GetSection("Jwt");
-var key = Encoding.ASCII.GetBytes(jwtSection["Key"]);
+// =====================  DB CONTEXT  =====================
+builder.Services.AddDbContext<MenuRestauranteContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// =====================  REPOSITORIES  =====================
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+// =====================  SERVICES  =====================
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+// =====================  CONTROLLERS & SWAGGER  =====================
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// =====================  JWT AUTH  =====================
+// (usa las claves que pusimos en appsettings.json: Jwt:Key, Jwt:Issuer, Jwt:Audience)
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+if (!string.IsNullOrEmpty(jwtKey))
+{
+    var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateIssuerSigningKey = true,
             ValidateLifetime = true,
-
-            ValidIssuer = jwtSection["Issuer"],
-            ValidAudience = jwtSection["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
         };
     });
-
-builder.Services.AddAuthorization();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<MenuRestauranteContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// =====================  PIPELINE HTTP  =====================
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
