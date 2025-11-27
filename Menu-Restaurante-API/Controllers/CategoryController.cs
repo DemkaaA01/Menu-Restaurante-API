@@ -11,7 +11,7 @@ public class CategoryController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
 
-    public CategoryController(ICategoryService categoryService)
+    public CategoryController(ICategoryService categoryService) //explicacion requerida
     {
         _categoryService = categoryService;
     }
@@ -26,6 +26,8 @@ public class CategoryController : ControllerBase
         return Ok(category);
     }
 
+
+
     // Invitado / dueño: obtener categorías de un restaurante
     // GET: api/category/restaurant/1
     [HttpGet("restaurant/{userId:int}")]
@@ -35,6 +37,8 @@ public class CategoryController : ControllerBase
         var categories = _categoryService.GetByUser(userId);
         return Ok(categories);
     }
+
+
 
     // Invitado: obtener una categoría con sus productos
     // GET: api/category/restaurant/1/with-products/3

@@ -25,16 +25,24 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             return _context.Products.Where(x => x.UserId == userId).ToList();
         }
         
+
+
         public List<Product> GetWithDiscount(int userId) 
         {
             return _context.Products.Where(x =>x.UserId == userId  && x.DiscountPercent > 0 || x.HappyHourEnabled).ToList();
         }
+
+
+
         public int Create (Product newProduct)
         {
             _context.Products.Add(newProduct);
            _context.SaveChanges();
             return newProduct.Id;
         }  
+
+
+
         public void Remove(int productId) 
         {
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
@@ -43,6 +51,8 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             _context.Products.Remove(product); 
             _context.SaveChanges();
         }
+
+
 
         public void SetDiscount(int productId, int discount)
         {
@@ -53,6 +63,9 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             _context.SaveChanges();
         }
 
+
+
+
         public void ToggleHappyHour(int productId, bool enable) 
         {
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
@@ -62,12 +75,17 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             _context.SaveChanges();
         }
 
+
+
+
         List<Product> IProductRepository.GetByCategory(int userId, int categoryId)
         {
-            return _context.Products.Where(x => x.Id == categoryId && x.Id == userId)
+            return _context.Products.Where(x => x.UserId == userId && x.CategoryId == categoryId) //antes => (x => x.Id == categoryId && x.Id == userId)
                                     .Include(x => x.Category)
                                     .ToList();
         }
+
+
 
 
         void IProductRepository.Update(Product updated, int productId)
@@ -83,7 +101,11 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             product.HappyHourEnabled = updated.HappyHourEnabled;
             product.HappyHourStart = updated.HappyHourStart;
             product.HappyHourEnd = updated.HappyHourEnd;
+
+            _context.SaveChanges();
         }
+
+
 
         List<Product> IProductRepository.GetByFilter(int userId, int? categoryId, bool discounted)
         {
@@ -105,6 +127,9 @@ namespace Menu_Restaurante_API.Repositories.Implementations
 
             return query.ToList();
         }
+
+
+
         public void IncreasePrices(int userId, int percent)
         {
             var products = _context.Products.Where(x => x.UserId == userId).ToList();

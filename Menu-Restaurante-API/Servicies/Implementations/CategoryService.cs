@@ -30,7 +30,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             var createdId = _categoryRepository.Create(category);
             var created = _categoryRepository.GetById(createdId);
 
-            return MapToDto(created ?? category);
+            return MapToDto(created ?? category); //esto se fija si created es null o no. Si no lo es, lo usa como DTO, si es, usa directamente el category creado recien.
         }
 
         CategoryWithProductsDto ICategoryService.GetWithProducts(int userId, int categoryId)
