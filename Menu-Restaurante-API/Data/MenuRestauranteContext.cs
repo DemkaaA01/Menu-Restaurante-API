@@ -3,14 +3,14 @@ using Menu_Restaurante_API.Entities;
 
 namespace Menu_Restaurante_API.Data
 {
-    public class MenuRestauranteContext : DbContext
+    public class MenuRestauranteContext : DbContext //DbContext crea la base de datos, es decir las tablas.
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<Product> Products { get; set; }
+        public DbSet<User> Users { get; set; } //DbSet marca como se forman las tablas de la BD
+        public DbSet<Product> Products { get; set; } //a partir de las propiedades de cada entitie define las columnas.
         public DbSet<Category> Categories { get; set; }
 
         public MenuRestauranteContext(DbContextOptions<MenuRestauranteContext> options)
-            : base(options)
+            : base(options) //el constructor
         {
         }
 

@@ -13,7 +13,7 @@ public class ProductController : ControllerBase
     private readonly IProductService _productService;
     private readonly IUserService _userService;
 
-    public ProductController(IProductService productService, IUserService userService)
+    public ProductController(IProductService productService, IUserService userService) //inyeccion de interfaces
     {
         _productService = productService;
         _userService = userService;

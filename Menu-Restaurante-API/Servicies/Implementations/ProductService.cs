@@ -49,7 +49,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
         {
             var product = _productRepository.GetById(productId); 
             if (product == null) throw new KeyNotFoundException("El producto no existe.");
-            return MapToDto(product);
+            return MapToDto(product); //ese map to DTO carga los datos desde la entitie a el DTO, asi trabajamos con el como corresponde.
         }
 
         List<ProductDto> IProductService.GetMenu(int userId, int? categoryId, bool discounted, bool onlyFavorites)

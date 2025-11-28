@@ -66,7 +66,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
                 throw new ArgumentException("Email, usuario y contraseña son obligatorios.");
             }
 
-            var user = new User
+            var user = new User //SE CREA UNA ENTITIE NUEVA, COMO SE REGISTRA ES ENTENDIBLE Q NO SEA UN DTO
             {
                 Username = dto.Username,
                 Password = PasswordHelper.Hash(dto.Password),

@@ -13,9 +13,9 @@ namespace Menu_Restaurante_API.Helpers
 
             using (var sha = SHA256.Create())
             {
-                var bytes = Encoding.UTF8.GetBytes(password);
+                var bytes = Encoding.UTF8.GetBytes(password); //Hash solo trabaja con bytes, por lo que transformo mi string a bytes.
                 var hashBytes = sha.ComputeHash(bytes);
-                return Convert.ToBase64String(hashBytes);
+                return Convert.ToBase64String(hashBytes); //aca transforma el hash a base64, es decir una cadena de letras, que con el mismo input siempre sera igual. 
             }
         }
 

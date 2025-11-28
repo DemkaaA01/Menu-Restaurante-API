@@ -17,7 +17,7 @@ namespace Menu_Restaurante_API.Repositories.Implementations
 
         public Product GetById(int productId)
         {
-            return _context.Products.FirstOrDefault(x => x.Id == productId);
+            return _context.Products.FirstOrDefault(x => x.Id == productId); //el EF Core traduce esto de LINQ -> SQL, para interactuar correctamente con la base de datos.
         }
 
         public List<Product> GetByRestaurant(int userId)
