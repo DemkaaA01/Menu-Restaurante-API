@@ -11,7 +11,7 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService) //lo de andentro del parentesis esta tal cual en el program, eso muestra por que se crea un user service.
     {
         _userService = userService;
     }
@@ -33,7 +33,7 @@ public class UserController : ControllerBase
     public ActionResult<UserDto> Register([FromBody] RegisterUserDto dto)
     {
         var created = _userService.Register(dto);
-        return CreatedAtAction(nameof(GetById), new { userId = created.Id }, created);
+        return CreatedAtAction(nameof(GetById), new { userId = created.Id }, created); //devuelve codigo 201 created, la location (api/user/id) y el dto creado digamos pero sin nuestra contrasenia.
     }
 
     // Invitado: login

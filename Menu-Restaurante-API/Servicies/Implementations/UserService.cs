@@ -14,7 +14,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration; //la dependendia de configuration es especificamente para el login, ya que la necesito para el JWT
 
         public UserService(IUserRepository userRepository, IConfiguration configuration)
         {
@@ -79,7 +79,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             var createdId = _userRepository.Create(user);
             var created = _userRepository.GetById(createdId);
 
-            return MapToDto(created ?? user);
+            return MapToDto(created ?? user); //devuelve al controller el usuario creado. si "creates NO es null, usa el User recien creado. si "created" es null, usa el user guardado en la memoria"
         }
 
         UserDto IUserService.Update(int userId, UserDto dto)
@@ -128,10 +128,10 @@ namespace Menu_Restaurante_API.Servicies.Implementations
                 // si más adelante querés roles, se agregan acá
             };
 
-            // 3) Obtener configuración JWT
-            var jwtSection = _configuration.GetSection("Jwt");
+            // 3) Obtener configuración JWT => necesito el token (que tiene mis datos de arriba del claim) para asi poder verificar que soy yo con el en los metodos que necesitan autorizaciojn, sin tener que volver a poner mi email y contrasenia.
+            var jwtSection = _configuration.GetSection("Jwt"); //en appsetting podemos encontrarlo
 
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSection["Key"]));
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSection["Key"])); //agarro la key que esta en appsettings y la paso a bytes
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             string expireValue = jwtSection["ExpireMinutes"] ?? "60"; // default 60
@@ -139,16 +139,16 @@ namespace Menu_Restaurante_API.Servicies.Implementations
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(expireMinutes),
-                Issuer = jwtSection["Issuer"],
-                Audience = jwtSection["Audience"],
+                Subject = new ClaimsIdentity(claims),//quien es el usuario
+                Expires = DateTime.UtcNow.AddMinutes(expireMinutes), //hasta cuando es valido el token
+                Issuer = jwtSection["Issuer"], //quien lo emitio
+                Audience = jwtSection["Audience"],//para quien esta destinado
                 SigningCredentials = creds
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-            string tokenString = tokenHandler.WriteToken(securityToken);
+            var tokenHandler = new JwtSecurityTokenHandler(); //creador de token
+            var securityToken = tokenHandler.CreateToken(tokenDescriptor);//esto lo crea en memoria, con todos los datos que obtenimos antes
+            string tokenString = tokenHandler.WriteToken(securityToken); //lo convierte en string.
 
             // 4) Armar respuesta
             return new LoginResponseDto

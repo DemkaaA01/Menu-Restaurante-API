@@ -29,6 +29,10 @@ public class ProductController : ControllerBase
         return Ok(product);
     }
 
+
+
+
+
     // Invitado: obtener productos de un restaurante, con filtros
     // GET: api/product/restaurant/1?categoryId=2&discounted=true&onlyFavorites=false
     [HttpGet("restaurant/{userId:int}")]
@@ -42,6 +46,9 @@ public class ProductController : ControllerBase
         var products = _productService.GetByRestaurant(userId, categoryId, discounted);
         return Ok(products);
     }
+
+
+
 
     // Dueño: crear producto
     // POST: api/product/restaurant/1
