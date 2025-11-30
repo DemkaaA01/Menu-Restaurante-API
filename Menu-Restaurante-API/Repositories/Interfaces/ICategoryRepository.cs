@@ -10,5 +10,6 @@ namespace Menu_Restaurante_API.Repositories.Interfaces
         int Create(Category newCategory);
         void Update(Category updated, int categoryId);
         void Remove(int categoryId);
+        Category GetByIdWithProducts(int userId, int categoryId);
     }
 }

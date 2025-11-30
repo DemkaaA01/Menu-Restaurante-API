@@ -43,11 +43,17 @@ public class ProductController : ControllerBase
         [FromQuery] bool discounted = false)
     {
         _userService.TrackVisit(userId);
-        var products = _productService.GetByRestaurant(userId, categoryId, discounted);
+        var products = _productService.GetByRestaurant(userId, categoryId, discounted, onlyFavorites:true);
         return Ok(products);
     }
 
-
+    [HttpPost("{productId:int}/favorite")]
+    [AllowAnonymous]
+    public ActionResult<ProductDto> ToggleFavorite(int productId)
+    {
+        var updated = _productService.ToggleFavorite(productId);
+        return Ok(updated);
+    }
 
 
     // Dueño: crear producto

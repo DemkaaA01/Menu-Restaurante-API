@@ -1,6 +1,7 @@
 ﻿using Menu_Restaurante_API.Data;
 using Menu_Restaurante_API.Entities;
 using Menu_Restaurante_API.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Menu_Restaurante_API.Repositories.Implementations
 {
@@ -16,6 +17,13 @@ namespace Menu_Restaurante_API.Repositories.Implementations
         {
             return _context.Categories.FirstOrDefault(x => x.Id == categoryId);
         }
+        public Category GetByIdWithProducts(int userId, int categoryId)
+        {
+            return _context.Categories
+                .Include(c => c.Products)
+                .FirstOrDefault(c => c.Id == categoryId && c.UserId == userId);
+        }
+
         public List<Category> GetByUser(int userId)
         {
             return _context.Categories.Where(x => x.UserId == userId).ToList(); //donde el userid puesto como parametro sea el mismo que tiene esa categoria.

@@ -16,7 +16,7 @@ namespace Menu_Restaurante_API.Repositories.Interfaces
         // extras dueñx:
         void SetDiscount(int productId, int percent);
         void ToggleHappyHour(int productId, bool enabled);
-        List<Product> GetByFilter(int userId, int? categoryId, bool discounted);
+        List<Product> GetByFilter(int userId, int? categoryId, bool discounted, bool onlyFavorites);
         void IncreasePrices(int userId, int percent);
     }
 }
