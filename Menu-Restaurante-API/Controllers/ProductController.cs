@@ -40,12 +40,15 @@ public class ProductController : ControllerBase
     public ActionResult<List<ProductDto>> GetByRestaurant(
         int userId,
         [FromQuery] int? categoryId = null,
-        [FromQuery] bool discounted = false)
+        [FromQuery] bool discounted = false,
+        [FromQuery] bool onlyFavorites = false)      // <--- NUEVO
     {
         _userService.TrackVisit(userId);
-        var products = _productService.GetByRestaurant(userId, categoryId, discounted, onlyFavorites:true);
+
+        var products = _productService.GetByRestaurant(userId, categoryId, discounted, onlyFavorites);
         return Ok(products);
-    }
+    } 
+    
 
     [HttpPost("{productId:int}/favorite")]
     [AllowAnonymous]

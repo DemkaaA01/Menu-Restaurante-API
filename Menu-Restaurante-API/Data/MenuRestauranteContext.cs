@@ -58,6 +58,7 @@ namespace Menu_Restaurante_API.Data
                     Price = 2500,
                     DiscountPercent = 0,
                     HappyHourEnabled = false,
+                    IsFavorite = true,
                     CategoryId = 3,
                     UserId = 1
                 },
@@ -69,6 +70,7 @@ namespace Menu_Restaurante_API.Data
                     Price = 900,
                     DiscountPercent = 10,
                     HappyHourEnabled = true,
+                    IsFavorite = true,
                     CategoryId = 2,
                     UserId = 1
                 },
@@ -80,6 +82,7 @@ namespace Menu_Restaurante_API.Data
                     Price = 1200,
                     DiscountPercent = 20,
                     HappyHourEnabled = true,
+                    IsFavorite = true,
                     CategoryId = 1,
                     UserId = 1
                 },
@@ -93,6 +96,7 @@ namespace Menu_Restaurante_API.Data
                     Price = 1800,
                     DiscountPercent = 0,
                     HappyHourEnabled = false,
+                    IsFavorite = true,
                     CategoryId = 4,
                     UserId = 2
                 },
@@ -104,6 +108,7 @@ namespace Menu_Restaurante_API.Data
                     Price = 350,
                     DiscountPercent = 0,
                     HappyHourEnabled = false,
+                    IsFavorite = true,
                     CategoryId = 5,
                     UserId = 2
                 },
@@ -115,6 +120,7 @@ namespace Menu_Restaurante_API.Data
                     Price = 800,
                     DiscountPercent = 30,
                     HappyHourEnabled = true,
+                    IsFavorite = false,
                     CategoryId = 6,
                     UserId = 2
                 }

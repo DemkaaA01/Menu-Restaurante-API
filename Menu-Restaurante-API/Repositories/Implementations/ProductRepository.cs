@@ -146,6 +146,20 @@ namespace Menu_Restaurante_API.Repositories.Implementations
 
             _context.SaveChanges();
         }
+        public Product? ToggleFavorite(int productId)     
+        {
+            var product = _context.Products.FirstOrDefault(x => x.Id == productId);
+            if (product == null) return null;
 
+            product.IsFavorite = !product.IsFavorite;
+            _context.SaveChanges();
+            return product;
+        }
+        public List<Product> GetFavorites(int userId)     // <---
+        {
+            return _context.Products
+                           .Where(x => x.UserId == userId && x.IsFavorite)
+                           .ToList();
+        }
     }
 }

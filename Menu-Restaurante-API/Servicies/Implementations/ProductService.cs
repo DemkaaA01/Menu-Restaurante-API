@@ -63,6 +63,10 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             {
                 products = _productRepository.GetWithDiscount(userId);
             }
+            else if (onlyFavorites)
+            {
+                products = _productRepository.GetFavorites(userId);
+            }
             else
             {
                 products = _productRepository.GetByRestaurant(userId);
@@ -128,18 +132,17 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             if (percent < 0) throw new ArgumentException("El porcentaje no puede ser negativo");
             _productRepository.IncreasePrices(userId, percent);
         }
-        public ProductDto ToggleFavorite(int productId)
+        ProductDto IProductService.ToggleFavorite(int productId)
         {
-            var product = _productRepository.GetById(productId)
-                          ?? throw new KeyNotFoundException("El producto no existe.");
+            var product = _productRepository.ToggleFavorite(productId);
 
-            product.IsFavorite = !product.IsFavorite;
+            if (product == null)
+                throw new KeyNotFoundException("El producto no existe.");
 
-            _productRepository.Update(product, product.Id);
-
-            var updated = _productRepository.GetById(product.Id)!;
-            return MapToDto(updated);
+      
+            return MapToDto(product);
         }
+
 
 
         /// //////////////////////privado
@@ -155,6 +158,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
                 Price = p.Price,
                 DiscountPercent = p.DiscountPercent,
                 HappyHourEnabled = p.HappyHourEnabled,
+                IsFavorite = p.IsFavorite,
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category != null ? p.Category.Name : null
             };

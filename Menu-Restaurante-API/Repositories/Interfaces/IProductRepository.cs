@@ -18,5 +18,7 @@ namespace Menu_Restaurante_API.Repositories.Interfaces
         void ToggleHappyHour(int productId, bool enabled);
         List<Product> GetByFilter(int userId, int? categoryId, bool discounted, bool onlyFavorites);
         void IncreasePrices(int userId, int percent);
+        public List<Product> GetFavorites(int userId);
+        public Product? ToggleFavorite(int productId);
     }
 }
