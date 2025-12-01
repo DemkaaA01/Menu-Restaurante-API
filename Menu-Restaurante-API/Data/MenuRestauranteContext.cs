@@ -8,7 +8,6 @@ namespace Menu_Restaurante_API.Data
         public DbSet<User> Users { get; set; } //DbSet marca como se forman las tablas de la BD
         public DbSet<Product> Products { get; set; } //a partir de las propiedades de cada entitie define las columnas.
         public DbSet<Category> Categories { get; set; }
-
         public MenuRestauranteContext(DbContextOptions<MenuRestauranteContext> options)
             : base(options) //el constructor
         {

@@ -126,7 +126,7 @@ namespace Menu_Restaurante_API.Servicies.Implementations
         }
         public void IncreasePrices(int userId, int percent)
         {
-            if (percent < 0) throw new ArgumentException("El porcentaje no puede ser negativo.");
+            if (percent < 0) throw new ArgumentException("El porcentaje no puede ser negativo");
             _productRepository.IncreasePrices(userId, percent);
         }
 
