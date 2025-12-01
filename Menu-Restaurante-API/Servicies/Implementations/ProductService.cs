@@ -96,11 +96,10 @@ namespace Menu_Restaurante_API.Servicies.Implementations
             return MapToDto(withCategory ?? product);
         }
 
-        List<ProductDto> IProductService.GetByRestaurant(int userId, int? categoryId = null, bool discounted = false)
+        public List<ProductDto> GetByRestaurant(int userId, int? categoryId, bool discounted, bool onlyFavorites)
         {
-            var products = _productRepository.GetByFilter(userId, categoryId, discounted);
-
-            return products.Select(p => MapToDto(p)).ToList();
+            var products = _productRepository.GetByFilter(userId, categoryId, discounted, onlyFavorites);
+            return products.Select(MapToDto).ToList();
         }
 
         ProductDto IProductService.Update(int productId, UpdateProductDto dto)
@@ -128,6 +127,18 @@ namespace Menu_Restaurante_API.Servicies.Implementations
         {
             if (percent < 0) throw new ArgumentException("El porcentaje no puede ser negativo");
             _productRepository.IncreasePrices(userId, percent);
+        }
+        public ProductDto ToggleFavorite(int productId)
+        {
+            var product = _productRepository.GetById(productId)
+                          ?? throw new KeyNotFoundException("El producto no existe.");
+
+            product.IsFavorite = !product.IsFavorite;
+
+            _productRepository.Update(product, product.Id);
+
+            var updated = _productRepository.GetById(product.Id)!;
+            return MapToDto(updated);
         }
 
 

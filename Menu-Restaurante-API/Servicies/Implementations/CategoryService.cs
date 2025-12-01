@@ -35,17 +35,14 @@ namespace Menu_Restaurante_API.Servicies.Implementations
 
         CategoryWithProductsDto ICategoryService.GetWithProducts(int userId, int categoryId)
         {
-            // Traemos la categoría del repo (ideal: con Include de Products)
-            var category = _categoryRepository.GetById(categoryId);
-
-            if (category == null || category.UserId != userId)
+            var category = _categoryRepository.GetByIdWithProducts(userId, categoryId);
+            if (category == null)
                 throw new KeyNotFoundException("La categoría no existe para este restaurante.");
 
             return new CategoryWithProductsDto
             {
                 Id = category.Id,
                 Name = category.Name,
-                //UserId = category.UserId,
                 Products = category.Products
                     .Select(p => new ProductDto
                     {
@@ -55,8 +52,8 @@ namespace Menu_Restaurante_API.Servicies.Implementations
                         Price = p.Price,
                         DiscountPercent = p.DiscountPercent,
                         HappyHourEnabled = p.HappyHourEnabled,
-                        CategoryId = p.CategoryId,
-                        //UserId = p.UserId
+                        CategoryId = p.CategoryId
+                        // UserId = p.UserId   // si lo necesitás
                     })
                     .ToList()
             };

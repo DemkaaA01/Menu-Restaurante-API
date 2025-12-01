@@ -107,7 +107,7 @@ namespace Menu_Restaurante_API.Repositories.Implementations
 
 
 
-        List<Product> IProductRepository.GetByFilter(int userId, int? categoryId, bool discounted)
+        List<Product> IProductRepository.GetByFilter(int userId, int? categoryId, bool discounted, bool onlyFavorites)
         {
             var query = _context.Products
                 .Include(x => x.Category)
@@ -123,6 +123,11 @@ namespace Menu_Restaurante_API.Repositories.Implementations
             if (discounted)
             {
                 query = query.Where(x => x.DiscountPercent > 0 || x.HappyHourEnabled);
+            }
+            // Filtro por favoritos
+            if (onlyFavorites)
+            {
+                query = query.Where(x => x.IsFavorite);
             }
 
             return query.ToList();

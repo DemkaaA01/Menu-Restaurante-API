@@ -20,6 +20,7 @@ namespace Menu_Restaurante_API.Entities
         public int DiscountPercent { get; set; } = 0;
 
         public bool HappyHourEnabled { get; set; } = false;
+        public bool IsFavorite { get; set; } = false;
 
         // ⏰ Horario de happy hour
         public TimeSpan? HappyHourStart { get; set; }
